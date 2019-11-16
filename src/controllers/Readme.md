@@ -1,0 +1,1 @@
+Los controllers son las funciones que se ejecutan cuando se llama a un método de la API.

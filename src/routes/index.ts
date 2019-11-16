@@ -1,9 +1,16 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
+import auth from './auth';
 
-const router = Router();
+export default class Routes {
 
-router.get('/', (req: Request, res: Response) => {
-    res.send('Hola mundo');
-});
+    router: Router;
 
-export default router;
+    constructor() {
+        this.router = Router();
+        this.routes();
+    }
+
+    routes() {
+        this.router.use(auth);
+    }
+}

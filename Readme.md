@@ -1,4 +1,5 @@
 1. Use npm-check-updates to update dependencies wih "ncu -u".
+2. ts-node exec typescript node without to compile the code.
 
 
 **** PostgreSQL

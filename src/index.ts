@@ -1,22 +1,33 @@
+
+import 'module-alias/register';
 import dotenv from 'dotenv';
 dotenv.config();
-// usar https://stackoverflow.com/questions/50813591/how-to-use-node-config-in-typescript
-import { config } from '../config/environments';
-import Server from './server';
-import logger from './utils/logger';
+import config from 'config'; // TODO: Custom path process.env["NODE_CONFIG_DIR"] = __dirname + "/configDir/";
+// try {
+// } catch(err) {
+//     console.log(err);
+//     process.exit();
+// }
+
+import Server from '@server';
+import logger from '@utils/logger';
 
 // import "reflect-metadata";
 // import { GraphQLServer } from "graphql-yoga";
 // import { importSchema } from "graphql-import";
 // import { resolvers } from "./resolvers/resolvers";
 
+
+
+
+// console.log(config);
+
 function main() {
-    const server = Server.init();
+    logger.info('API server made by J. Diego Sierra');
+    logger.info('Current environment: ' + process.env.NODE_ENV || "development");
+    
+    const server = Server.init(config, logger);
     server.start(() => {
-        logger.info('API server made by J. Diego Sierra');
-        logger.info('Current environment: ' + process.env.NODE_ENV);
-        logger.info('Server listening on port ' + config().PORT);
-        logger.info('Domain: ' + config().HOST);
     });
 
     // Handle Errors

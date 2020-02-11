@@ -1,11 +1,23 @@
 import winston from "winston";
+const { createLogger, format, transports } = winston
+const { combine, timestamp, label, printf, colorize } = format
+
+var moment = require('moment');
+
+const myFormat = winston.format.printf(({ level, message, label, timestamp }) => {
+  return `[${level}] ${moment().format('YYYY-MM-DD HH:mm:ss:SSS')} ${message}`;
+});
 
 const logger = winston.createLogger({
   format: winston.format.combine(
+    colorize(),
     // winston.format.label({ label: 'right meow!' }),
-    winston.format.timestamp(),
-    winston.format.splat(),
-    winston.format.simple()
+    // winston.format.timestamp(),
+    // winston.format.splat(),
+    // winston.format.simple(),
+    myFormat
+    // ${timestamp} [${label}] ${level}: ${message}
+    // winston.format.level 
   ),
   transports: [
     new winston.transports.File({
@@ -16,10 +28,11 @@ const logger = winston.createLogger({
       maxFiles: 1
     }),
     new winston.transports.Console({
-      level: process.env.NODE_ENV === 'production' ? 'error' : 'debug'
+      level: 'silly',
+      colorize: true
     })
   ],
-  exitOnError: false
+  exitOnError: false,
 });
 
 export default logger;

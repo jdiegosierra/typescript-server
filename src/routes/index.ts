@@ -8,6 +8,8 @@ export default class Routes {
     constructor() {
         this.router = Router();
         this.routes();
+
+        return this.router;
     }
 
     routes() {

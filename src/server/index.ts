@@ -1,28 +1,34 @@
-import { config } from '../../config/environments';
 import express from 'express';
 // import routes from '../routes';
 import helmet from 'helmet';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import errorHandler from 'errorhandler';
-import { stream } from '../utils/logger';
 import http from 'http';
+import Routes from '@routes';
 // import https from 'https';
-import logger from '../../.history/src/utils/logger_20191121003611';
-// BUENAS PRACTICAS https://expressjs.com/es/advanced/best-practice-security.html
+import router from '../routes/auth';
+// https://expressjs.com/es/advanced/best-practice-security.html
 
 export default class Server {
     public app: express.Application;
-    server: any;
+    server: Any;
+    config: Any;
+    logger: Any;
 
-    constructor() {
+    constructor(config: Any, logger: Any) {
+        this.config = config.get('server');
+        this.logger = logger;
         this.app = express();
-        this.config();
+        this.setUp();
         this.routes();
     }
 
-    // Load middlewares & config from file
-    config() {
+    static init(config: Any, logger: Any): Server {
+        return new Server(config, logger);
+    }
+
+    setUp() {
         this.app.use(helmet());
         this.app.use(bodyParser.json({limit: '500kb'}));
         this.app.use(bodyParser.urlencoded({limit: '500kb', extended: true}));
@@ -31,13 +37,13 @@ export default class Server {
         if ((process.env.NODE_ENV || 'development') === 'development'){
             const morgan = require('morgan');
             this.app.use(morgan('combined'));
-            this.app.use(morgan('dev', { 'stream': stream }));
+            this.app.use(morgan('dev', { 'stream': this.logger }));
         }
-        this.app.use(errorHandler);
+        // this.app.use(errorHandler);
 
-        // HTTPS AÑDIR HTTPS EN EXPRESS
-        if (config().HTTPS) {
-            logger.error('HTTPS not available');
+        // TODO: Add HTTPS
+        if (this.config.HTTPS) {
+            this.logger.error('HTTPS not available');
             // this.server = https.createServer(settings().HTTPS, (req,res) => {
             //     this.app(req,res);
             // });
@@ -48,20 +54,23 @@ export default class Server {
         }
 
         this.app.setMaxListeners(0);
-        this.app.set('port', config().PORT || 3000);
+        this.app.set('host', this.config.HOST || '0.0.0.0');
+        this.logger.info('Domain: ' + this.config.HOST);
+        this.app.set('port', this.config.PORT || 3000);
+        this.logger.info('Server listening on port ' + this.config.PORT);
     }
 
     routes() {
-        this.app.use(express.static(__dirname + '/docs'));
-        // TODO: Importar routes
-        // this.app.use(routes);
+        // this.app.use(express.static(__dirname + '/docs'));
+        // this.app.use('/login', function (_req, res, _next) {
+        //     res.send('holita');
+        // });
+        let routes = new Routes();
+        this.app.use(routes);
+        // this.app.use('/login', router);
     }
 
     start(callback: Function) {
-        this.server.listen(this.app.get('port'), callback());
-    }
-
-    static init(): Server{
-        return new Server();
+        this.server.listen(this.app.get('port'), this.app.get('host'), callback());
     }
 }

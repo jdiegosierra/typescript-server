@@ -27,7 +27,7 @@ const router: Router = Router()
  *       "error": "Invalid password"
  *     }
  */
-router.post('/login', function (_req, res, _next) {
+router.use('/login', function (_req, res, _next) {
     // let username = req.body.username;
     // let password = req.body.password;
 
@@ -39,7 +39,7 @@ router.post('/login', function (_req, res, _next) {
     // // const token = jwt.sign({"username": username}, process.env.SECRET_WORD);
 
     // res.status(200).json({token});
-    res.send('holita');
+    res.send('holitaaaaaa');
 });
 
 // router.verifyToken = function(req, res, next) {

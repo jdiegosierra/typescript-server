@@ -2,20 +2,19 @@
   "name": "typescript-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "start": "ts-node-dev --respawn --transpileOnly src/index.ts",
     "dev": "nodemon",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "prod": "tsc && node ./dist/index.js",
-    "gen-schema-types": "gql2ts src/schemas/schema.graphql -o src/@types/schema.d.ts"
+    "gen-schema-types": "gql2ts src/schemas/schema.graphql -o src/@types/schema.d.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jdiegosierra/typescript-server.git"
-  },
-  "author": "",
+  "repository": "git+https://github.com/jdiegosierra/typescript-server.git",
+  "author": "diego <jdiego.sierra@hotmail.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/jdiegosierra/typescript-server/issues"
@@ -38,8 +37,20 @@
     "@types/uuid": "^3.4.6",
     "@types/winston": "^2.4.4",
     "babel-loader": "^8.0.6",
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb": "^18.0.1",
+    "eslint-config-node": "^4.0.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.18.3",
+    "eslint-plugin-react-hooks": "^1.7.0",
     "gql2ts": "^1.10.1",
     "nodemon": "^1.19.4",
+    "prettier": "^1.19.1",
+    "prettier-eslint": "^9.0.1",
     "ts-node": "8.5.2",
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.7.2"

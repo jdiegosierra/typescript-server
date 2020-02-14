@@ -1,5 +1,4 @@
-import { Router } from 'express';
-const router: Router = Router()
+import authcontroller from '../controllers/auth';
 //const bcrypt = require('bcrypt');
 // const jwt = require('jsonwebtoken');
 
@@ -12,7 +11,7 @@ const router: Router = Router()
  * @apiParam {String} password Password associated with the username account.
  *
  * @apiSuccess {JSON} token Token access.
- * 
+ *
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
  *{
@@ -27,40 +26,53 @@ const router: Router = Router()
  *       "error": "Invalid password"
  *     }
  */
-router.use('/login', function (_req, res, _next) {
-    // let username = req.body.username;
-    // let password = req.body.password;
 
-    // if (password !== process.env.SECRET_WORD) {
-    //     res.status(401).send({error: 'Invalid password'})
-    //     return;
+let auth = {
+  login: function(_req, res) {
+    res.status(200).send(authcontroller.login('diego', 'password'));
+    // res.status(200).json({ token });
+  },
+  verifyToken: function(req, res, next) {
+    console.log('Token válido');
+    next();
+    // var token = req.headers['authorization'];
+    // if (!token) {
+    //   res.status(401).send({
+    //     error: 'Es necesario el token de autenticación'
+    //   });
+    //   return;
     // }
+    // token = token.replace('Bearer ', '');
 
-    // // const token = jwt.sign({"username": username}, process.env.SECRET_WORD);
-
-    // res.status(200).json({token});
-    res.send('holitaaaaaa');
-});
+    // jwt.verify(token, process.env.SECRET_WORD, function(err, decoded) {
+    //   if (err) {
+    //     res.status(401).send({ error: 'Token inválido' });
+    //   } else {
+    //     res.locals.username = decoded.username;
+    //     next();
+    //   }
+    // });
+  }
+};
 
 // router.verifyToken = function(req, res, next) {
-//     var token = req.headers['authorization'];
-//     if(!token){
-//         res.status(401).send({
-//           error: "Es necesario el token de autenticación"
-//         });
-//         return;
-//     }
-//     token = token.replace('Bearer ', '');
-
-//     jwt.verify(token, process.env.SECRET_WORD, function(err, decoded) {
-//         if(err) {
-//             res.status(401).send({error: 'Token inválido'})
-//         }
-//         else {
-//             res.locals.username = decoded.username;
-//             next();
-//         }
+//   var token = req.headers['authorization'];
+//   if (!token) {
+//     res.status(401).send({
+//       error: 'Es necesario el token de autenticación'
 //     });
-// }
+//     return;
+//   }
+//   token = token.replace('Bearer ', '');
 
-export default router;
+//   jwt.verify(token, process.env.SECRET_WORD, function(err, decoded) {
+//     if (err) {
+//       res.status(401).send({ error: 'Token inválido' });
+//     } else {
+//       res.locals.username = decoded.username;
+//       next();
+//     }
+//   });
+// };
+
+export default auth;

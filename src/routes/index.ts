@@ -1,18 +1,20 @@
 import { Router } from 'express';
+// TODO: import as controller
 import auth from './auth';
+import test from './test';
 
 export default class Routes {
+  router: Router;
 
-    router: Router;
+  constructor() {
+    this.router = Router();
+    this._routes();
 
-    constructor() {
-        this.router = Router();
-        this.routes();
+    return this.router;
+  }
 
-        return this.router;
-    }
-
-    routes() {
-        this.router.use(auth);
-    }
+  _routes() {
+    this.router.post('/login', auth.login);
+    this.router.get('/test', auth.verifyToken, test.test);
+  }
 }

@@ -2,7 +2,7 @@ Bienvenido a la boilerplate de Diego. Para desarrollarla cogeremos como ejemplo 
 
 Esta boilerplate implementa un servidor con node.js y typescript. Haremos uso de todas las herramientas necesaras en un caso de uso real.
 
-
+TODO: AÑADIR express-prom-bundle. kybe-state-metrics. node exporter. prometheus y graphana. Zipkin.
 
 
 1. Use npm-check-updates to update dependencies wih "ncu -u".

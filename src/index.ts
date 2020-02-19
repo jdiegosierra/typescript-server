@@ -9,8 +9,8 @@ import config from 'config'; // TODO: Custom path process.env["NODE_CONFIG_DIR"]
 //     process.exit();
 // }
 
-import Server from '@server';
-import logger from '@utils/logger';
+/*import Server from '@server';
+import logger from '@utils/logger';*/
 
 // import "reflect-metadata";
 // import { GraphQLServer } from "graphql-yoga";
@@ -20,15 +20,15 @@ import logger from '@utils/logger';
 
 
 
-// console.log(config);
+console.log(config);
 
 function main() {
-    logger.info('API server made by J. Diego Sierra');
-    logger.info('Current environment: ' + process.env.NODE_ENV || "development");
+/*    logger.info('API server made by J. Diego Sierra');
+    logger.info('Current environment: ' + process.env.NODE_ENV || "development");*/
     
-    const server = Server.init(config, logger);
-    server.start(() => {
-    });
+/*    const server = Server.init(config, logger);*/
+    // server.start(() => {
+    // });
 
     // Handle Errors
     // Sustituir por errorhandler??

@@ -17,6 +17,7 @@ let auth = {
     //   }
     // const token = jwt.sign({ username: username }, process.env.SECRET_WORD);
     return 'Este es tu token ' + username;
-  }
+  },
+  test: function() {}
 };
 export default auth;

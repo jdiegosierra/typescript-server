@@ -28,10 +28,15 @@ export default class Server {
   }
 
   _setUp() {
-    this.app.use(helmet());
+    // this.app.use(helmet());
     this.app.use(bodyParser.json({ limit: '500kb' }));
-    this.app.use(bodyParser.urlencoded({ limit: '500kb', extended: true }));
-    this.app.use(cors());
+
+    // this.app.use(function(req, res) {
+    //   // console.log(req.body.talks);
+
+    // });
+    // this.app.use(bodyParser.urlencoded({ limit: '500kb', extended: true }));
+    // this.app.use(cors());
     // TODO: Add verbose flag
     if ((process.env.NODE_ENV || 'development') === 'development') {
       // const morgan = require('morgan');

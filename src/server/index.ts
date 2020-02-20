@@ -1,35 +1,41 @@
 import express from 'express';
 // import routes from '../routes';
-import helmet from 'helmet';
+// import helmet from 'helmet';
 import bodyParser from 'body-parser';
-import cors from 'cors';
+// import cors from 'cors';
 // import errorHandler from 'errorhandler';
 import http from 'http';
-import Routes from '@routes';
+import Routes from '@routes/index';
+/*// TODO: Get config logger
+import { logger } from '@utils/logger';*/
 // import https from 'https';
 // https://expressjs.com/es/advanced/best-practice-security.html
 
 export default class Server {
-  public app: express.Application;
-  server: Any;
-  config: Any;
-  logger: Any;
+  _app: Express.Application;
+  _server: any;
+  _config: any;
+  _logger: any;
 
-  constructor(config: Any, logger: Any) {
-    this.config = config.get('server');
-    this.logger = logger;
-    this.app = express();
+  constructor(config: any, logger: logger) {
+    this._config = config.get('server');
+    this._logger = logger;
+    this._app = express();
     this._setUp();
     this._routes();
   }
 
-  static init(config: Any, logger: Any): Server {
+  static init(config: any, logger: logger): Server {
     return new Server(config, logger);
+  }
+
+  start(callback: Function) {
+    this._server.listen(this._app.get('port'), this._app.get('host'), callback());
   }
 
   _setUp() {
     // this.app.use(helmet());
-    this.app.use(bodyParser.json({ limit: '500kb' }));
+    this._app.use(bodyParser.json({ limit: '500kb' }));
 
     // this.app.use(function(req, res) {
     //   // console.log(req.body.talks);
@@ -46,22 +52,20 @@ export default class Server {
     // this.app.use(errorHandler);
 
     // TODO: Add HTTPS
-    if (this.config.HTTPS) {
-      this.logger.error('HTTPS not available');
+    if (this._config.HTTPS) {
+      this._logger.error('HTTPS not available');
       // this.server = https.createServer(settings().HTTPS, (req,res) => {
       //     this.app(req,res);
       // });
     } else {
-      this.server = http.createServer((req, res) => {
-        this.app(req, res);
-      });
+      this._server = http.createServer(() => {});
     }
 
-    this.app.setMaxListeners(0);
-    this.app.set('host', this.config.HOST || '0.0.0.0');
-    this.logger.info('Domain: ' + this.config.HOST);
-    this.app.set('port', this.config.PORT || 3000);
-    this.logger.info('Server listening on port ' + this.config.PORT);
+    this._app.setMaxListeners(0);
+    this._app.set('host', this.config.HOST || '0.0.0.0');
+    this._logger.info('Domain: ' + this.config.HOST);
+    this._app.set('port', this.config.PORT || 3000);
+    this._logger.info('Server listening on port ' + this.config.PORT);
   }
 
   _routes() {
@@ -69,11 +73,8 @@ export default class Server {
     // this.app.use('/login', function (_req, res, _next) {
     //     res.send('holita');
     // });
-    this.app.use('/api/v1', new Routes());
+    let router = new Routes();
+    this._app.use('/', router);
     // this.app.use('/login', router);
-  }
-
-  start(callback: Function) {
-    this.server.listen(this.app.get('port'), this.app.get('host'), callback());
   }
 }

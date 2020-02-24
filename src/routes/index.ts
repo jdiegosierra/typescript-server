@@ -1,4 +1,5 @@
-import { Router } from 'express';
+import { Request, Response, Router } from 'express';
+
 // TODO: import as controller
 /*import auth from './auth';
 import test from './test';
@@ -10,13 +11,15 @@ export default class Routes {
   constructor() {
     this.router = Router();
     this._routes();
+  };
 
+  getV1Routes() {
     return this.router;
-  }
+  };
 
   _routes() {
-    this.router.get('/test', () => {
-      console.log("elelelelele");
+    this.router.get('/ping', (_req: Request, res: Response) => {
+      res.send('pong');
     });
 /*    this.router.post('/login', auth.login);
     this.router.get('/test', auth.verifyToken, test.test);

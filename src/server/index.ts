@@ -1,23 +1,22 @@
-import express from 'express';
-// import routes from '../routes';
+import express, { Express } from 'express';
 // import helmet from 'helmet';
-import bodyParser from 'body-parser';
+// import bodyParser from 'body-parser';
 // import cors from 'cors';
 // import errorHandler from 'errorhandler';
-import http from 'http';
+import * as http from "http";
 import Routes from '@routes/index';
-/*// TODO: Get config logger
-import { logger } from '@utils/logger';*/
+// TODO: Get config logger
+import { logger } from '@utils/logger';
 // import https from 'https';
 // https://expressjs.com/es/advanced/best-practice-security.html
 
 export default class Server {
-  _app: Express.Application;
+  _app: Express;
   _server: any;
   _config: any;
   _logger: any;
 
-  constructor(config: any, logger: logger) {
+  constructor(config: any) {
     this._config = config.get('server');
     this._logger = logger;
     this._app = express();
@@ -25,23 +24,23 @@ export default class Server {
     this._routes();
   }
 
-  static init(config: any, logger: logger): Server {
-    return new Server(config, logger);
+  static init(config: any): Server {
+    return new Server(config);
   }
 
-  start(callback: Function) {
-    this._server.listen(this._app.get('port'), this._app.get('host'), callback());
+  start() {
+    this._server.listen(this._app.get('port'), this._app.get('host'));
   }
 
   _setUp() {
     // this.app.use(helmet());
-    this._app.use(bodyParser.json({ limit: '500kb' }));
+    // this._app.use(bodyParser.json({ limit: '500kb' }));
 
     // this.app.use(function(req, res) {
     //   // console.log(req.body.talks);
 
     // });
-    // this.app.use(bodyParser.urlencoded({ limit: '500kb', extended: true }));
+    // this._app.use(bodyParser.urlencoded({ limit: '500kb', extended: true }));
     // this.app.use(cors());
     // TODO: Add verbose flag
     if ((process.env.NODE_ENV || 'development') === 'development') {
@@ -52,29 +51,32 @@ export default class Server {
     // this.app.use(errorHandler);
 
     // TODO: Add HTTPS
-    if (this._config.HTTPS) {
+    if (this._config['HTTPS']) {
       this._logger.error('HTTPS not available');
       // this.server = https.createServer(settings().HTTPS, (req,res) => {
       //     this.app(req,res);
       // });
     } else {
-      this._server = http.createServer(() => {});
+      this._server = http.createServer((req: any,res: any) => {
+            this._app(req,res);
+        });
     }
 
     this._app.setMaxListeners(0);
-    this._app.set('host', this.config.HOST || '0.0.0.0');
-    this._logger.info('Domain: ' + this.config.HOST);
-    this._app.set('port', this.config.PORT || 3000);
-    this._logger.info('Server listening on port ' + this.config.PORT);
+    this._app.set('host', this._config['HOST'] || '0.0.0.0');
+    this._logger.info('Domain: ' + this._config['HOST']);
+    this._app.set('port', this._config['PORT'] || 3000);
+    this._logger.info('Server listening on port ' + this._config['PORT']);
   }
 
   _routes() {
     // this.app.use(express.static(__dirname + '/docs'));
-    // this.app.use('/login', function (_req, res, _next) {
-    //     res.send('holita');
+    // this._app.use('/login', () => {
+    //   console.log('dwsfwqetrert');
     // });
     let router = new Routes();
-    this._app.use('/', router);
+    // this._app.use('/api/v1/ping', () => console.log("jejejeje"));
+    this._app.use('/api/v1', router.getV1Routes());
     // this.app.use('/login', router);
   }
 }

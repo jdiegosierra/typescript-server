@@ -12,8 +12,8 @@ const index_1 = __importDefault(require("@server/index"));
 function main() {
     logger_1.logger.info('API server made by J. Diego Sierra');
     logger_1.logger.info('Current environment: ' + process.env.NODE_ENV || "development");
-    const server = index_1.default.init(config_1.default, logger_1.logger);
-    server.start(() => { });
+    const server = index_1.default.init(config_1.default);
+    server.start();
 }
 main();
 //# sourceMappingURL=index.js.map

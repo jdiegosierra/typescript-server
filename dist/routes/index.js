@@ -5,11 +5,15 @@ class Routes {
     constructor() {
         this.router = express_1.Router();
         this._routes();
+    }
+    ;
+    getV1Routes() {
         return this.router;
     }
+    ;
     _routes() {
-        this.router.get('/test', () => {
-            console.log("elelelelele");
+        this.router.get('/ping', (_req, res) => {
+            res.send('pong');
         });
     }
 }

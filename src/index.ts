@@ -22,8 +22,8 @@ function main() {
     logger.info('API server made by J. Diego Sierra');
     logger.info('Current environment: ' + process.env.NODE_ENV || "development");
     
-    const server = Server.init(config, logger);
-    server.start(() => {});
+    const server = Server.init(config);
+    server.start();
 
     // Handle Errors
     // Sustituir por errorhandler??

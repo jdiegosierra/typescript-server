@@ -1,1 +1,7 @@
-// Aquí es exportan todos los controladores
+import auth from './auth';
+
+let controllers = {
+  auth
+};
+
+export default controllers

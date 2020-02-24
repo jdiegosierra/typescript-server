@@ -1,6 +1,5 @@
-import authcontroller from '../controllers/auth';
-//const bcrypt = require('bcrypt');
-// const jwt = require('jsonwebtoken');
+import { NextFunction, Request, Response } from 'express';
+import controllers from '@controllers/index';
 
 /**
  * @api {post} /api/v1/login Request Token
@@ -27,13 +26,14 @@ import authcontroller from '../controllers/auth';
  *     }
  */
 
-let auth = {
-  login: function(_req, res) {
-    res.status(200).send(authcontroller.login('diego', 'password'));
-    // res.status(200).json({ token });
+const auth = {
+  login: function(req: Request, res: Response): void {
+    const result: string | null = controllers.auth.login(req.body['username'], req.body['password']);
+
+    if (result) res.status(200).send();
+    else res.status(400);
   },
-  verifyToken: function(req, res, next) {
-    console.log('Token válido');
+  verifyToken: function(req: Request, res: Response, next: NextFunction) {
     next();
     // var token = req.headers['authorization'];
     // if (!token) {

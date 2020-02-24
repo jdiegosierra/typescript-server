@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 let auth = {
-    login: function (username, password) {
-        return 'Este es tu token ' + username;
+    login: function (_req, res) {
+        res.send('solalalalalal');
     },
     test: function () { }
 };

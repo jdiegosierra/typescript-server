@@ -70,13 +70,8 @@ export default class Server {
   }
 
   _routes() {
-    // this.app.use(express.static(__dirname + '/docs'));
-    // this._app.use('/login', () => {
-    //   console.log('dwsfwqetrert');
-    // });
+    // TODO: call as REST https://www.npmjs.com/package/http-typescript
     let router = new Routes();
-    // this._app.use('/api/v1/ping', () => console.log("jejejeje"));
     this._app.use('/api/v1', router.getV1Routes());
-    // this.app.use('/login', router);
   }
 }

@@ -1,9 +1,6 @@
 import { Request, Response, Router } from 'express';
-
-// TODO: import as controller
-/*import auth from './auth';
-import test from './test';
-import talks from './talks';*/
+import controller from '@controllers/index';
+import auth from '@routes/auth';
 
 export default class Routes {
   router: Router;
@@ -21,9 +18,6 @@ export default class Routes {
     this.router.get('/ping', (_req: Request, res: Response) => {
       res.send('pong');
     });
-/*    this.router.post('/login', auth.login);
-    this.router.get('/test', auth.verifyToken, test.test);
-    this.router.post('/talks', talks.add);
-    this.router.get('/talks', talks.get);*/
+    this.router.post('/login', auth.login);
   }
 }

@@ -1,5 +1,5 @@
 Arguments: 
-  /home/diego/.nvm/versions/node/v13.8.0/bin/node /usr/share/yarn/bin/yarn.js add @types/http -D
+  /home/diego/.nvm/versions/node/v13.8.0/bin/node /usr/share/yarn/bin/yarn.js add @types/jwt
 
 PATH: 
   /home/diego/.cargo/bin:/home/diego/.nvm/versions/node/v13.8.0/bin:/home/diego/.poetry/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/diego/.local/bin:/snap/bin:/home/diego/.local/bin:/usr/local/go/bin:/home/diego/projects/go/bin
@@ -14,7 +14,7 @@ Platform:
   linux x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@types%2fhttp: Not found
+  Error: https://registry.yarnpkg.com/@types%2fjwt: Not found
       at Request.params.callback [as _callback] (/usr/share/yarn/lib/cli.js:66947:18)
       at Request.self.callback (/usr/share/yarn/lib/cli.js:140665:22)
       at Request.emit (events.js:321:20)
@@ -107,7 +107,8 @@ npm manifest:
     "_moduleAliases": {
       "@server": "dist/server",
       "@utils": "dist/utils",
-      "@routes": "dist/routes"
+      "@routes": "dist/routes",
+      "@controllers": "dist/controllers"
     }
   }
 

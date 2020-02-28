@@ -6,6 +6,7 @@ build/
 tmp/
 temp/
 logs/
+dist/
 package-lock.json
 
 # IntelliJ/WebStorm
@@ -19,4 +20,3 @@ package-lock.json
 
 tests/*.js
 tests/*.js.map
-dist/

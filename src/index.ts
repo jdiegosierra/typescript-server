@@ -1,16 +1,16 @@
 
 import 'module-alias/register';
-import dotenv from 'dotenv';
-dotenv.config();
+import dotenv from 'dotenv'; dotenv.config();
 import config from 'config'; // TODO: Custom path process.env["NODE_CONFIG_DIR"] = __dirname + "/configDir/";
+import { logger } from '@utils/logger';
+import Server from '@server/index';
 // try {
 // } catch(err) {
 //     console.log(err);
 //     process.exit();
 // }
 
-import { logger } from '@utils/logger';
-import Server from '@server/index';
+
 
 // import "reflect-metadata";
 // import { GraphQLServer } from "graphql-yoga";

@@ -19,3 +19,4 @@ package-lock.json
 
 tests/*.js
 tests/*.js.map
+dist/

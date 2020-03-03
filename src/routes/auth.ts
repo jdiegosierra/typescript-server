@@ -33,7 +33,7 @@ const auth = {
     if (result) res.status(200).send();
     else res.status(400);
   },
-  verifyToken: function(req: Request, res: Response, next: NextFunction) {
+  verifyToken: function(_req: Request, _res: Response, next: NextFunction) {
     next();
     // var token = req.headers['authorization'];
     // if (!token) {

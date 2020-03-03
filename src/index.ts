@@ -18,7 +18,7 @@ import Server from '@server/index';
 // import { resolvers } from "./resolvers/resolvers";
 
 
-function main() {
+(() => {
     logger.info('API server made by J. Diego Sierra');
     logger.info('Current environment: ' + process.env.NODE_ENV || "development");
     
@@ -34,9 +34,7 @@ function main() {
     //         logger.error('Uncaught Exception: ' + err);
     //     }
     // });
-}
-
-main();
+})();
 
 // const typeDefs = importSchema("schema.graphql");
 // const server2 = Server.init(8000);

@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import controller from '@controllers/index';
+import _controller from '@controllers/index';
 import auth from '@routes/auth';
 
 export default class Routes {

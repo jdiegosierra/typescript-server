@@ -1,31 +1,41 @@
-// Config
-import 'module-alias/register';
 require('dotenv').config();
-import config from './config/default'; // TODO: Custom path process.env["NODE_CONFIG_DIR"] = __dirname + "/configDir/";
+import config from "./config/default";
 // Dependencies
-import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { grpcOptions, tcpOptions } from './config/transportOptions'
-// Use Nest Logger
-// import { logger } from '@utils/logger';
+import { LoggerService } from './shared/logger/logger.service';
+import * as cluster from 'cluster';
+import * as os from 'os';
 
 (async () => {
-    // logger.info('API server made by J. Diego Sierra');
-    // logger.info('Current environment: ' + process.env.NODE_ENV || "development");
-/*   This example contains a hybrid application (HTTP + gRPC)
-   You can switch to a microservice with NestFactory.createMicroservice() as follows:*/
-   const app = await NestFactory.create(AppModule);
-   await app.connectMicroservice(grpcOptions);
+  const loggerService = new LoggerService();
+  loggerService.setContext('App');
 
-  app.connectMicroservice(tcpOptions);
-  await app.startAllMicroservicesAsync();
-  await app.listen(config.server['PORT']);
+  if (config.server.CLUSTER_MODE) {
+    // Check if current process is master.
+    if (cluster.isMaster) {
+      // Get total CPU cores.
+      const cpuCount = os.cpus().length;
 
-  // const app = await NestFactory.create(AppModule);
-  // app.connectMicroservice(grpcClientOptions);
-  //
-  // await app.startAllMicroservicesAsync();
-  // await app.listen(3001);
-  // console.log(`Application is running on: ${await app.getUrl()}`);
+      // Spawn a worker for every core.
+      for (let j = 0; j < cpuCount; j++) {
+        cluster.fork();
+      }
+    } else {
+      // This is not the master process, so we spawn the express server.
+      await AppModule.start(loggerService);
+    }
+
+    // Cluster API has a variety of events.
+    // Here we are creating a new process if a worker die.
+    cluster.on('exit', function (worker) {
+      loggerService.setContext('Master');
+      loggerService.logger.info(`Worker ${worker.id} died'`);
+      loggerService.logger.info(`Staring a new one...`);
+      cluster.fork();
+    });
+  } else {
+    // const app = new AppModule(loggerService);
+    await AppModule.start(loggerService);
   }
-)();
+
+})();

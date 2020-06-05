@@ -1,314 +1,188 @@
 SHELL := /bin/bash
 
-# DO NOT CHANGE VERSION NUMBER MANUALLY
-VERSION=0.0.1
-VERSION_MAJOR:=$(shell echo $(VERSION) | cut -d'.' -f1)
-VERSION_MINOR:=$(shell echo $(VERSION) | cut -d'.' -f2)
-VERSION_PATCH:=$(shell echo $(VERSION) | cut -d'.' -f3)
+#define yarn
+#    source $(HOME)/.nvm/nvm.sh && nvm i $(1) && npm i -g yarn && eval "yarn $(2)"
+#endef
+#
+#define node-bin
+#	source $(HOME)/.nvm/nvm.sh && nvm which $(1)
+#endef
+#
+#
+## commands
+## --------
+#
+## set up linux (installs docker, node and pm2)
+#setup-linux:
+#	# install docker
+#	[ -x "$(shell command -v docker)" ] || ( \
+#		wget -qO- https://get.docker.com | bash && \
+#		sudo usermod -aG docker $(USER) \
+#	)
+#	# install nvm, node (12 and latest) and pm2
+#	wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+#	export NVM_DIR="$(shell [ -z "${XDG_CONFIG_HOME-}" ] && printf %s "$(HOME)/.nvm" || printf %s "$(XDG_CONFIG_HOME)/nvm")" && \
+#		[ -s "$(NVM_DIR)/nvm.sh" ] && \. "$(NVM_DIR)/nvm.sh" && \
+#		nvm i node && \
+#		npm i -g pm2
+#
+## set up fabric
+#setup-fabric:
+#	rm -rf blockchain-deployment/bin
+#	cd blockchain-deployment && \
+#	wget -qO- https://raw.githubusercontent.com/hyperledger/fabric/master/scripts/bootstrap.sh | bash -s -- -s
+#
+## install all required dependencies
+#setup:
+#	[ -d "./blockchain-deployment/bin" ] || make setup-fabric
+#	cd chaincode && $(call yarn,12)
+#	cd government-app/backend && $(call yarn,12)
+#	cd government-app/frontend && $(call yarn,node)
+#	cd healthcare-app/backend && $(call yarn,12)
+#	cd travel-app/backend && $(call yarn,12)
+#
+## format all projects
+#format:
+#	cd government-app/backend && $(call yarn,12,format)
+#	cd government-app/frontend && $(call yarn,node,format)
+#	cd healthcare-app/backend && $(call yarn,12,format)
+#	cd travel-app/backend && $(call yarn,12,format)
+#
+## build all projects
+#build:
+#	cd chaincode && $(call yarn,12,build)
+#	cd government-app/frontend && $(call yarn,node,build)
+#
+#define start_back_front
+#	pm2 start --name passport19-$(1)-back --interpreter $(shell $(call node-bin,12)) $(2)-app/backend/api.js -- $(3)
+#	cd $(2)-app/frontend && PORT=$(4) pm2 start --name passport19-$(1)-front --interpreter $(shell $(call node-bin,node)) npm -- start
+#	# TODO: use pm2 SPA server with build instead
+#endef
 
+# start demo
+start-demo:	 # PM2 + docker?
+	./scripts/start-demo.sh
+	#$(call start_back_front,gov,government,8001,7001)
+	# $#(call start_back_front,health,healthcare,8002,7002)
+	# $#(call start_back_front,travel,travel,8003,7003)
 
-# configuration
-# -------------
-
-SLUG=pyvincoli
-NAME=PyVincoli
-
-
-# project setup
-# -------------
-
-# install pre-commit hook (will execute "make checklist")
-setup-pre-commit:
-	echo -e '#!/bin/bash\nmake checklist' > .git/hooks/pre-commit
-	chmod +x .git/hooks/pre-commit
-
-# setup project for development
-setup: setup-pre-commit
-	poetry env use python3.8
-	source .venv/bin/activate && python -m pip install -U pip
-	poetry install
-
-
-# code tasks
-# ----------
-
-# run all automatic code tasks (formatting, linting, testing...)
-checklist: format lint test-unit-docker
-
-# format files with black, isort and trim
-format:
-	black .
-	# unimport -r .
-	isort -rc .
-	shopt -sq globstar extglob && trim ./**/*
-
-# lint python code with pycodestyle, pyflakes, mccabe, radon, eradicate and mypy
-lint:
-	pylama --skip *test*,.venv\*,**/*_pb2.py,*_pb2_grpc.py -l pylint,pycodestyle,pydocstyle,pyflakes,mccabe,radon,eradicate,mypy .
-	# pylama --skip *test*,.venv\*,**/*_pb2.py,*_pb2_grpc.py -l mypy .
-	bandit -r $(shell pwd) -x $(shell pwd)/.venv/,$(shell pwd)/tests,**/*/test_*.py,**/*/conftest.py
-
-# run unit tests
-test-unit:
-	pytest pyvincoli/
-
-# run unit tests with docker compose
-test-unit-docker:
-	@docker build -t pyvincoli-unit-tests --network vincoli.packages -f tests/Dockerfile . &> /dev/null
-	@cd tests && docker-compose up -d &> /dev/null
-	@cd tests && docker-compose logs -f test
-	@cd tests && docker-compose rm -sf test > /dev/null
-
-# run integration tests
-test-integration:
-	sudo rm -rf logs
-	mkdir logs
-	touch logs/test1.log logs/test2.log logs/test3.log
-	docker-compose up
-
-# starts a configured network
-init-network:
-	@pytest tests/integration/init.py --disable-pytest-warnings -s
-
-# run all tests
-test: test-unit-docker test-integration
-
-# run static type analysis with mypy (strict)
-check-types:
-	mypy --strict -p pyvincoli
-
-# bump project version
-# config file: .bumpversion.cfg
-# usage:
-# $ make bump-version type=major|minor|patch (default is patch)
-type?=patch
-bump-version:
-	bumpversion $(type)
-
-
-# documentation
-# ---------
-
-# open internal documentation in a web browser
-# usage:
-# $ make serve-doc port=<port>
-# (default port is 9876)
-port?=9876
-serve-doc:
-	killall -9 pdoc
-	xdg-open http://localhost:$(port)/pyvincoli
-	pdoc --http :$(port) -c show_type_annotations=True pyvincoli
-
-
-# execution
-# ---------
-
-# start node
-start:
-	@python entrypoint.py
-
-
-# docker
-# ------
-
-# build docker image
-docker-build:
-	docker build \
-		--network vincoli.packages \
-		-t $(SLUG):latest \
-		-t $(SLUG):$(VERSION_MAJOR) \
-		-t $(SLUG):$(VERSION_MAJOR).$(VERSION_MINOR) \
-		-t $(SLUG):$(VERSION) \
-		.
-
-# start node with docker
-# usage:
-# $ make docker-start rpc_port=<port> rest_port=<port>
-# (defaults are rpc: 50051 and rest: 8000)
-rpc_port?=50051
-rest_port?=8000
-docker-start:
-	touch /tmp/pyvincoli-docker.log
-	touch /tmp/pyvincoli-console.log
-	docker run -d \
-		--name $(SLUG) \
-		--network host \
-		-p $(rpc_port):50051 \
-		-p $(rest_port):8000 \
-		-e LOGGING_CONSOLE_LEVEL=DEBUG \
-		-v /tmp/pyvincoli-docker.log:/app/node.log:rw \
-		$(SLUG):$(VERSION)
-	docker logs -f pyvincoli &> /tmp/pyvincoli-docker-console.log
-
-# stop and remove the container that's currently running
-docker-stop:
-	-docker rm -f $(SLUG)
-
-# stop the container that's currently running
-docker-pause:
-	docker stop $(SLUG)
-
-# resume the node that's currently paused
-docker-resume:
-	docker start $(SLUG)
-
-# build image and start node with docker
-# usage:
-# $ make docker-refresh rpc_port=<port> rest_port=<port>
-# (defaults are rpc: 50051 and rest: 8000)
-docker-refresh: docker-stop docker-build docker-start
-
-docker-watch:
-	while inotifywait -r -e close_write .; do (make docker-refresh) done
-
-docker-follow-log:
-	tail -F /tmp/pyvincoli-docker.log
-
-docker-follow-console:
-	tail -F /tmp/pyvincoli-docker-console.log
-
-# makefile help and guide
-# -----------------------
-
-# print makefile help
-define help_text
-Makefile for $(NAME) v$(VERSION)
-
-Usage: make [COMMAND] [OPTIONS]
-Example: make example-command example-option=value
-
-
-Commands
-========
-
-Project setup
-  setup-pre-commit    Install pre-commit hook (will execute "make checklist")
-  setup               Setup project for development
-
-Code tasks
-  checklist           Run all automatic code tasks (formatting, linting, testing...)
-  format              Format files with black, isort and trim
-  lint                Lint python code with pycodestyle, pyflakes, mccabe, radon, eradicate and mypy
-  bump-version        Bump project version
-    - type=major|minor|patch (default: patch)
-  test-unit           Run unit tests
-  test-unit-docker    Run unit tests in a docker with resources
-  test-integration    Run integration tests
-  test                Run all tests
-  check-types         Run static type analysis with mypy (strict)
-  init-network        Starts a configured network and wait to manually test on it. Configuration in tests/integration/init.py
-
-Documentation
-  serve-docs          Open internal documentation in a web browser
-    - port=<port> (default: 9876)
-
-Execution
-  start               Start node
-
-Docker
-  docker-build        Build docker image
-  docker-start        Start node with docker
-    - rpc_port=<port> (default: 50051)
-    - rest_port=<port> (default: 8000)
-  docker-stop         Stop and remove the container that's currently running
-  docker-pause        Stop the container that's currently running
-  docker-resume       Resume the node that's currently paused
-  docker-refresh      Build image and start node with docker
-    - rpc_port=<port> (default: 50051)
-    - rest_port=<port> (default: 8000)
-
-Help
-  help                Show help with full command list
-  guide               Show usage guide
+define stop_back_front
+	pm2 delete passport19-$(1)-back passport19-$(1)-front
 endef
-export help_text
-# show help with full command list
-help:
-	@echo "$$help_text"
 
-define guide_text
-Makefile for $(NAME) v$(VERSION)
+# stop
+stop-demo:
+	./scripts/stop-demo.sh
+	-#$(call stop_back_front,gov)
+	# -$(call stop_back_front,health)
+	# -$(call stop_back_front,travel)
 
-
-Usage guide
-===========
-
-Project setup
--------------
-
-- Setup the project when it's freshly cloned:
-$ make setup
-# activate the virtualenv (or configure it on your IDE)
-$ source .venv/bin/activate
-
-Code quality
-------------
-
-- Run formatting, linting and testing tasks:
-$ make checklist
-
-- Format the project files:
-$ make format
-
-- Lint the python code:
-$ make lint
-
-- Publish a new version:
-$ make bump-version type=major|minor|patch
-
-- Run all tests:
-$ make test
-
-- Run unit tests:
-$ make test-unit
-
-- Run unit tests in a docker:
-$ make test-unit-docker
-
-- Run integration tests:
-$ make test-integration
-
-- Analyze types with mypy (strict):
-$ make check-types
-
-
-Documentation
--------------
-
-- See the internal documentation:
-$ make serve-doc port=<port>
-
-
-Execution
----------
-
-- Start the node:
-$ make start
-
-- Starts a configured network:
-$ make init-network
-
-
-Docker
-------
-
-- Build the docker image:
-$ make docker-build
-
-- Start the node with docker:
-$ make docker-start rpc_port=<port> rest_port=<port>
-
-- Stop the node container:
-$ make docker-stop
-
-- Rebuild and redeploy the node image with the latest changes:
-$ make docker-refresh rpc_port=<port> rest_port=<port>
-
-- Pause and resume the currently running node container:
-$ make docker-pause
-$ make docker-resume
-endef
-export guide_text
-# show usage guide
-guide:
-	@echo "$$guide_text"
+## refresh demo
+demo-refresh:
+	cd scripts && docker-compose refresh
+#
+## set up and start the demo from scratch (including OS dependencies)
+#quick-start:
+#	make setup-linux && source ~/.bashrc && make refresh
+#
+#
+## makefile help and guide
+## -----------------------
+#
+#define help_text
+#
+#
+#                                       _  __  ___
+#                                      | |/_ |/ _ \
+#  _ __   __ _ ___ ___ _ __   ___  _ __| |_| | (_) |
+# | '_ \ / _` / __/ __| '_ \ / _ \| '__| __| |\__, |
+# | |_) | (_| \__ \__ \ |_) | (_) | |  | |_| |  / /
+# | .__/ \__,_|___/___/ .__/ \___/|_|   \__|_| /_/
+# | |                 | |
+# |_|                 |_|     (a blockchain demo)
+#
+#
+#Usage: make [COMMAND]
+#Example: make quick-start
+#
+#
+#Commands
+#========
+#
+#Setup:
+#  setup-linux         Set up Linux (installs docker, node and pm2)
+#  setup-fabric        Install or update fabric binaries and images
+#  setup               Install all required dependencies
+#
+#Demo:
+#  start               Start demo
+#  quick-start         Set up and start the demo from scratch (including Linux setup)
+#  stop                Stop demo
+#  refresh             Refresh demo
+#
+#Development:
+#  format              Format all projects
+#  build               Build all projects
+#
+#Help:
+#  help                Show help with full command list
+#  guide               Show usage guide
+#
+#endef
+#export help_text
+## show help with full command list
+#help:
+#	@echo "$$help_text"
+#
+#define guide_text
+#
+#
+#                                       _  __  ___
+#                                      | |/_ |/ _ \
+#  _ __   __ _ ___ ___ _ __   ___  _ __| |_| | (_) |
+# | '_ \ / _` / __/ __| '_ \ / _ \| '__| __| |\__, |
+# | |_) | (_| \__ \__ \ |_) | (_) | |  | |_| |  / /
+# | .__/ \__,_|___/___/ .__/ \___/|_|   \__|_| /_/
+# | |                 | |
+# |_|                 |_|     (a blockchain demo)
+#
+#
+#
+#
+#Usage guide
+#===========
+#
+#Demoing
+#-------
+#
+#- Start the demo:
+#$ make quick-start
+#
+#- Stop the demo:
+#$ make stop
+#
+#Developing
+#----------
+#
+#- Install Docker and Node.js (if not already installed):
+#$ make setup-linux
+#
+#- Setup all projects after cloning:
+#$ make setup
+#
+#- Automatically format the code in all projects:
+#$ make format
+#
+#- Build the code in all projects:
+#$ make build
+#
+#- Refresh the demo (stop, build and start again):
+#$ make refresh
+#
+#For more help, read the README.md file.
+#
+#endef
+#export guide_text
+## show usage guide
+#guide:
+#	@echo "$$guide_text"

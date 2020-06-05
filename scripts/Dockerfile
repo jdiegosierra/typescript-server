@@ -1,23 +1,24 @@
 FROM node:12-alpine
 
 # Create app directory
-#WORKDIR /usr/src
+WORKDIR /usr/server
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
 #COPY package*.json ./
-#EXPOSE 3000
+EXPOSE 8888
 #EXPOSE 3001
-EXPOSE ${GRPC_PORT}
+#EXPOSE ${GRPC_PORT}
+
 #RUN npm install
 # If you are building your code for production
 # RUN npm ci --only=production
 
 # Bundle app source
-COPY . .
-RUN npm install grpc
-CMD [ "npm", "start" ]
+#COPY . /usr/server/
+#RUN npm i -g @nestjs/cli
+CMD [ "npm", "run", "start:dev" ]
 
 # TODO: HACER UN VOLUME PARA LA CARPTECA DE DOCS
 

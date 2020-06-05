@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 // import { RpcModule } from './transport-layers/rpc/rpc.module';
 import { RestModule } from './transport-layers/rest/rest.module';
 import { LoggerModule } from './shared/logger/logger.module';
-import {NestFactory} from "@nestjs/core";
+import { NestFactory } from "@nestjs/core";
 import config from "./config/default";
-import {LoggerService} from "./shared/logger/logger.service";
+import { LoggerService } from "./shared/logger/logger.service";
 
 @Module({
   imports: [RestModule, LoggerModule],

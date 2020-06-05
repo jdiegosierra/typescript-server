@@ -15,19 +15,34 @@ const server: IData = {
     HOST: '0.0.0.0',
     PORT: 8888,
     HTTPS: false,
-    CLUSTER_MODE: false
+    CLUSTER_MODE: false,
+    DB_PORT:54321,
+    DB_USERNAME: 'postgres',
+    DB_PASSWORD: 'p@ssw0rd',
+    DB_DATABASE: 'postgres',
+    DB_HOST: 'localhost'
   },
   test: {
     HOST: '0.0.0.0',
     PORT: 8888,
     HTTPS: true,
-    CLUSTER_MODE: false
+    CLUSTER_MODE: false,
+    DB_PORT:54321,
+    DB_USERNAME: 'postgres',
+    DB_PASSWORD: 'p@ssw0rd',
+    DB_DATABASE: 'postgres',
+    DB_HOST: 'localhost'
   },
   production: {
     HOST: '0.0.0.0',
     PORT: 8888,
     HTTPS: true,
-    CLUSTER_MODE: true
+    CLUSTER_MODE: true,
+    DB_PORT:54321,
+    DB_USERNAME: 'postgres',
+    DB_PASSWORD: 'p@ssw0rd',
+    DB_DATABASE: 'postgres',
+    DB_HOST: 'localhost'
   },
 };
 

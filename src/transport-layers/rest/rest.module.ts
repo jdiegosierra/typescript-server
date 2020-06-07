@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { PingModule } from '../../modules/ping/ping.module';
+import { UserModule } from '../../modules/user/user.module';
 
 @Module({
-  imports: [PingModule],
+  imports: [PingModule, UserModule],
 })
 export class RestModule {
   // Middlewares

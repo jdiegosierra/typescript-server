@@ -22,6 +22,12 @@ services:
     environment:
       POSTGRES_PASSWORD: ${SQLDB_PASSWORD}
       PGPASSWORD: ${SQLDB_PASSWORD}
+#      echo "listen_addresses='*'" >> /var/lib/postgresql/data/postgresql.conf
+# /etc/init.d/postgresql reload
+  #    volumes:
+#      - /home/diego/Projects/github/typescript-server/scripts/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
+#    env_file:
+#      - docker.env
   nosqldatabase:
     image: "mongo:latest"
     container_name: ${NOSQLDB_NAME}
@@ -29,8 +35,7 @@ services:
       - ${NOSQLDB_PORT}:${NOSQLDB_PORT}
     volumes:
       - ../db/nosql:/data/db
-    environment:
+#    environment:
       # provide your credentials here
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=rootPassXXX
-
+#      - MONGO_INITDB_ROOT_USERNAME=root
+#      - MONGO_INITDB_ROOT_PASSWORD=rootPassXXX

@@ -16,11 +16,12 @@ const server: IData = {
     PORT: 8888,
     HTTPS: false,
     CLUSTER_MODE: false,
-    DB_PORT:54321,
+    DB_PORT: 27017,
     DB_USERNAME: 'postgres',
     DB_PASSWORD: 'p@ssw0rd',
-    DB_DATABASE: 'postgres',
-    DB_HOST: 'localhost'
+    DB_TYPE: 'mongodb',
+    DB_HOST: '172.24.0.2',
+    DB_NAME: 'test'
   },
   test: {
     HOST: '0.0.0.0',

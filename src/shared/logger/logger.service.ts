@@ -38,7 +38,7 @@ export class LoggerService {
             ),
             level: 'debug',
             options: { flags: 'w' },
-            filename: './logs/debug.log',
+            filename: './logs/output.log',
             handleExceptions: true,
             maxsize: 5242880, // 5MB
             maxFiles: 1,

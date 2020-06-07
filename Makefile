@@ -60,8 +60,8 @@ SHELL := /bin/bash
 #endef
 
 # start demo
-start-demo:	 # PM2 + docker?
-	./scripts/start-demo.sh
+start-development:	 # PM2 + docker?
+	./scripts/start-development.sh
 	#$(call start_back_front,gov,government,8001,7001)
 	# $#(call start_back_front,health,healthcare,8002,7002)
 	# $#(call start_back_front,travel,travel,8003,7003)
@@ -71,8 +71,8 @@ define stop_back_front
 endef
 
 # stop
-stop-demo:
-	./scripts/stop-demo.sh
+stop-development:
+	./scripts/stop-development.sh
 	-#$(call stop_back_front,gov)
 	# -$(call stop_back_front,health)
 	# -$(call stop_back_front,travel)
